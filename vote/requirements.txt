@@ -1,3 +1,4 @@
-Flask
-Redis
-gunicorn
+Flask>=3.0,<3.1
+redis>=5.0,<6.0
+gunicorn>=22.0,<23.0
+prometheus-flask-exporter>=0.23,<0.24
