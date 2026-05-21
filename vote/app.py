@@ -4,9 +4,10 @@ from prometheus_flask_exporter import PrometheusMetrics
 
 import os
 import socket
-import random
+# import random
 import json
 import logging
+import uuid
 
 option_a = os.getenv('OPTION_A', "Cats")
 option_b = os.getenv('OPTION_B', "Dogs")
@@ -38,13 +39,30 @@ app.logger.setLevel(logging.INFO)
 # -----------------------------
 def get_redis():
     if not hasattr(g, 'redis'):
+        # g.redis = Redis(
+        #     # host="redis",
+        #     host=os.getenv("REDIS_HOST", "redis"),
+        #     db=0,
+        #     socket_timeout=5,
+        #     decode_responses=True
+        # )
         g.redis = Redis(
-            host="redis",
+            host=os.getenv("REDIS_HOST", "redis"),
+            port=int(os.getenv("REDIS_PORT", 6379)),
             db=0,
-            socket_timeout=5,
+            socket_timeout=2,
+            socket_connect_timeout=2,
+            health_check_interval=30,
             decode_responses=True
         )
     return g.redis
+
+@app.teardown_appcontext
+def close_redis(exception):
+    redis = g.pop('redis', None)
+
+    if redis is not None:
+        redis.close()
 
 # -----------------------------
 # LIVENESS PROBE
@@ -96,7 +114,8 @@ def hello():
     voter_id = request.cookies.get('voter_id')
 
     if not voter_id:
-        voter_id = hex(random.getrandbits(64))[2:-1]
+        # voter_id = hex(random.getrandbits(64))[2:-1]
+        voter_id = str(uuid.uuid4())
 
     vote = None
 
@@ -106,6 +125,10 @@ def hello():
             redis = get_redis()
 
             vote = request.form['vote']
+            if vote not in ['a', 'b']:
+                return {
+                    "error": "invalid vote"
+                }, 400
 
             app.logger.info('Received vote for %s', vote)
 
@@ -143,6 +166,6 @@ if __name__ == "__main__":
     app.run(
         host='0.0.0.0',
         port=80,
-        debug=True,
+        debug=False,
         threaded=True
     )
