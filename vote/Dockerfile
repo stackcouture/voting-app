@@ -6,9 +6,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /build
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    gcc \
-    build-essential && \
+    apt-get install -y --no-install-recommends curl && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir --upgrade pip
@@ -53,11 +51,11 @@ LABEL org.opencontainers.image.version="1.0.0"
 CMD ["gunicorn", \
      "app:app", \
      "--bind", "0.0.0.0:8080", \
-     "--workers", "2", \
+     "--workers", "4", \
      "--threads", "2", \
      "--timeout", "30", \
      "--graceful-timeout", "10", \
      "--keep-alive", "5", \
-     "--worker-tmp-dir", "/tmp/gunicorn", \
+     "--worker-tmp-dir", "/dev/shm", \
      "--access-logfile", "-", \
      "--error-logfile", "-"]

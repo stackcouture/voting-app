@@ -215,8 +215,25 @@ app.get('/metrics', async (req, res) => {
 */
 
 app.get('/healthz', function (req, res) {
-
   res.status(200).send('OK');
+});
+
+app.get('/readyz', async function (req, res) {
+  try {
+    await pool.query('SELECT 1');
+    res.status(200).json({
+      status: 'ready',
+      database: 'connected'
+    });
+
+  } catch (err) {
+    console.error('Readiness check failed');
+    console.error(err.message);
+    res.status(503).json({
+      status: 'not ready',
+      database: 'disconnected'
+    });
+  }
 });
 
 /*
@@ -224,8 +241,6 @@ app.get('/healthz', function (req, res) {
 | Start Server
 |--------------------------------------------------------------------------
 */
-
 server.listen(port, function () {
-
   console.log(`App running on port ${port}`);
 });

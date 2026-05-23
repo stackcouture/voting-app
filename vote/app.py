@@ -19,7 +19,6 @@ app = Flask(__name__)
 # PROMETHEUS METRICS
 # -----------------------------
 metrics = PrometheusMetrics(app)
-
 vote_counter = metrics.counter(
     'vote_requests_total',
     'Total vote requests',
@@ -165,7 +164,7 @@ def hello():
 if __name__ == "__main__":
     app.run(
         host='0.0.0.0',
-        port=80,
+        port=int(os.getenv("PORT", 8080)),
         debug=False,
         threaded=True
     )
