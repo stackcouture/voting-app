@@ -1,71 +1,63 @@
-# -----------------------------------
-# BASE IMAGE
-# -----------------------------------
-FROM python:3.11-slim AS base
+FROM python:3.11-slim AS builder
 
-# Python optimizations
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install curl for healthcheck
+WORKDIR /build
+
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl && \
+    apt-get install -y --no-install-recommends \
+    gcc \
+    build-essential && \
     rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
-RUN useradd -r -u 1001 appuser
+RUN pip install --no-cache-dir --upgrade pip
 
-# Working directory
-WORKDIR /usr/local/app
-
-# Install dependencies first for better caching
 COPY requirements.txt .
+RUN pip install \
+    --no-cache-dir \
+    --prefix=/install \
+    -r requirements.txt
 
-RUN pip install --no-cache-dir -r requirements.txt
+FROM python:3.11-slim AS runtime
 
-# -----------------------------------
-# DEVELOPMENT STAGE
-# -----------------------------------
-FROM base AS dev
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-RUN pip install watchdog
+RUN groupadd -g 10001 appgroup && \
+    useradd \
+    --uid 10001 \
+    --gid 10001 \
+    --create-home \
+    --shell /usr/sbin/nologin \
+    appuser
 
-ENV FLASK_ENV=development
+WORKDIR /app
+COPY --from=builder /install /usr/local
+COPY --chown=10001:10001 . .
 
-COPY . .
+RUN mkdir -p /tmp/gunicorn && \
+    chown -R 10001:10001 /tmp/gunicorn /app
 
-CMD ["python", "app.py"]
+USER 10001:10001
 
-# -----------------------------------
-# PRODUCTION STAGE
-# -----------------------------------
-FROM base AS final
+EXPOSE 8080
 
-# Copy application source
-COPY . .
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8080/livez')"
 
-# Change ownership
-RUN chown -R appuser:appuser /usr/local/app
+LABEL org.opencontainers.image.title="vote-app"
+LABEL org.opencontainers.image.description="Production-grade voting application"
+LABEL org.opencontainers.image.version="1.0.0"
 
-# Switch to non-root user
-USER appuser
-
-# Expose application port
-EXPOSE 80
-
-# Container healthcheck
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost/livez || exit 1
-
-# Production Gunicorn startup
 CMD ["gunicorn", \
      "app:app", \
-     "--bind", "0.0.0.0:80", \
-     "--workers", "4", \
+     "--bind", "0.0.0.0:8080", \
+     "--workers", "2", \
      "--threads", "2", \
      "--timeout", "30", \
      "--graceful-timeout", "10", \
      "--keep-alive", "5", \
-     "--worker-tmp-dir", "/dev/shm", \
+     "--worker-tmp-dir", "/tmp/gunicorn", \
      "--access-logfile", "-", \
      "--error-logfile", "-"]
