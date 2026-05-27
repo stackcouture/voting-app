@@ -55,3 +55,8 @@ jobs:
       - name: Configure Docker
         run: |
           gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG \
