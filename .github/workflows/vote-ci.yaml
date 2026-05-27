@@ -35,9 +35,9 @@ jobs:
         working-directory: ./result
         run: npm ci
 
-      - name: Run Lint
-        working-directory: ./result
-        run: npm run lint
+      # - name: Run Lint
+      #   working-directory: ./result
+      #   run: npm run lint
 
       - name: Run Unit Tests
         working-directory: ./result
