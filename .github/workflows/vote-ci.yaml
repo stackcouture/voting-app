@@ -8,7 +8,7 @@ on:
       - 'main'
 
 env:
-  PROJECT_ID: "project=project-18ee516c-a108-431d-a73"
+  PROJECT_ID: "project-18ee516c-a108-431d-a73"
   REGION: asia-south1
   REPOSITORY: voting-docker-repo
   IMAGE_NAME: vote
@@ -61,3 +61,4 @@ jobs:
         run: |
           docker build \
             -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG \
+            . 
