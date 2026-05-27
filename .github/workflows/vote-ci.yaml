@@ -32,6 +32,7 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
+        working-directory: ./result
         run: npm ci
 
       - name: Run Lint
