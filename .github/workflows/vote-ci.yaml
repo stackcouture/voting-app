@@ -1,0 +1,54 @@
+name: Build Vote
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+
+env:
+  PROJECT_ID: "project=project-18ee516c-a108-431d-a73"
+  REGION: asia-south1
+  REPOSITORY: voting-docker-repo
+  IMAGE_NAME: vote
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  build-vote:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Lint
+        run: npm run lint
+
+      - name: Run Unit Tests
+        run: npm test
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/440909314761/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: github-actions@project-18ee516c-a108-431d-a73.iam.gserviceaccount.com
+      
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+      
+      - name: Configure Docker
+        run: |
+          gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
