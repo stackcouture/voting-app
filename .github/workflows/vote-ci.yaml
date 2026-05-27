@@ -71,3 +71,8 @@ jobs:
           exit-code: 0
           ignore-unfixed: true
           severity: CRITICAL
+      
+      - name: Push Docker Image
+        run: |
+          docker push \
+            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
