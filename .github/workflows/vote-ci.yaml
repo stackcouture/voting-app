@@ -81,11 +81,12 @@ jobs:
       
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
+        with:
+          cosign-release: 'v2.2.4'
 
-      
       - name: Sign Docker Image
         env:
           COSIGN_EXPERIMENTAL: "true"
         run: |
-          cosign sign --yes --keyless \
+          cosign sign --yes  \
             $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
