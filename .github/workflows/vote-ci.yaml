@@ -11,7 +11,7 @@ env:
   PROJECT_ID: "project-18ee516c-a108-431d-a73"
   REGION: asia-south1
   REPOSITORY: vote-docker-repo
-  IMAGE_NAME: vote
+  IMAGE_NAME: result
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
