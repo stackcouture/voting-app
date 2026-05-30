@@ -10,7 +10,7 @@ on:
 env:
   PROJECT_ID: "project-18ee516c-a108-431d-a73"
   REGION: asia-south1
-  REPOSITORY: voting-docker-repo
+  REPOSITORY: vote-docker-repo
   IMAGE_NAME: vote
   IMAGE_TAG: ${{ github.sha }}
 
