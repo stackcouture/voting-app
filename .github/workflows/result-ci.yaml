@@ -6,14 +6,14 @@ on:
       - main
     paths: 
       - 'result/**' 
-      - '.github/workflows/result.yaml'
+      - '.github/workflows/result-ci.yaml'
 
   pull_request:
     branches:
       - main
     paths: 
       - 'result/**' 
-      - '.github/workflows/result.yaml'
+      - '.github/workflows/result-ci.yaml'
 
 env:
   PROJECT_ID: "project-18ee516c-a108-431d-a73"
