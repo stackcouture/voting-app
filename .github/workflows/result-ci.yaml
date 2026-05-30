@@ -117,14 +117,9 @@ jobs:
         run: |
           sed -i "s|newTag:.*|newTag: ${IMAGE_TAG}|g" \
           apps/vote-app/overlays/dev/kustomization.yaml
-      
-      - name: Verify Updated File 
-        run: | 
-          cat apps/vote-app/overlays/dev/kustomization.yaml
 
       - name: Commit Changes
         run: |
-
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
