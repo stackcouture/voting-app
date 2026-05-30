@@ -1,0 +1,139 @@
+name: Build vote
+
+on:
+  push:
+    branches:
+      - main
+    paths: 
+      - 'result/**' 
+      - '.github/workflows/vote-ci.yaml'
+
+  pull_request:
+    branches:
+      - main
+    paths: 
+      - 'result/**' 
+      - '.github/workflows/vote-ci.yaml'
+
+env:
+  PROJECT_ID: "project-18ee516c-a108-431d-a73"
+  REGION: asia-south1
+  REPOSITORY: vote-docker-repo
+  IMAGE_NAME: vote
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-python@v5 
+        with: 
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        working-directory: ./vote
+        run: |
+          python -m pip install --upgrade pip 
+          pip install -r requirements.txt
+
+      # - name: Run Lint
+      #   working-directory: ./result
+      #   run: npm run lint
+
+      - name: Run Unit Tests
+        working-directory: ./vote
+        run: | 
+            pytest
+
+
+  build-scan-push-sign:
+    needs: test
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/440909314761/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: github-actions@project-18ee516c-a108-431d-a73.iam.gserviceaccount.com
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker
+        run: |
+          gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+
+      - name: Build Docker Image
+        working-directory: ./vote
+        run: |
+          docker build \
+            -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG \
+            .
+
+      - name: Run Trivy Scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          format: table
+          exit-code: 0
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+
+      - name: Push Docker Image
+        run: |
+          docker push \
+            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v3
+        with:
+          cosign-release: v2.2.4
+
+      - name: Sign Docker Image
+        run: |
+          cosign sign --yes \
+            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+  
+  update-gitops:
+    needs: build-scan-push-sign
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitOps Repo
+        uses: actions/checkout@v4
+        with:
+          repository: stackcouture/gitops-microservices-platform
+          token: ${{ secrets.GITOPS_TOKEN }}
+
+      - name: Update Image Tag
+        run: |
+          sed -i "s|newTag:.*|newTag: ${IMAGE_TAG}|g" \
+          apps/result/overlays/dev/kustomization.yaml
+
+      - name: Commit Changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add apps/vote/overlays/dev/kustomization.yaml
+
+          git commit -m "Update vote-app image to ${IMAGE_TAG}" || echo "No changes"
+
+      - name: Push Changes
+        run: |
+          git push
