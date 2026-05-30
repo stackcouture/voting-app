@@ -101,3 +101,37 @@ jobs:
         run: |
           cosign sign --yes \
             $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+  
+  update-gitops:
+    needs: build-scan-push-sign
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitOps Repo
+        uses: actions/checkout@v4
+        with:
+          repository: stackcouture/gitops-microservices-platform
+          token: ${{ secrets.GITOPS_TOKEN }}
+
+      - name: Update Image Tag
+        run: |
+          sed -i "s|newTag:.*|newTag: ${IMAGE_TAG}|g" \
+          apps/vote-app/overlays/dev/kustomization.yaml
+      
+      - name: Verify Updated File 
+        run: | 
+          cat apps/vote-app/overlays/dev/kustomization.yaml
+
+      - name: Commit Changes
+        run: |
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add apps/vote-app/overlays/dev/kustomization.yaml
+
+          git commit -m "Update vote-app image to ${IMAGE_TAG}" || echo "No changes"
+
+      - name: Push Changes
+        run: |
+          git push
