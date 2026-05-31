@@ -133,7 +133,7 @@ jobs:
 
           git add apps/vote/overlays/dev/kustomization.yaml
 
-          git commit -m "Update vote-app image to ${IMAGE_TAG}" || echo "No changes"
+          git commit -m "Update vote-app image to ${IMAGE_TAG}" || echo "No changes "
 
       - name: Push Changes
         run: |
