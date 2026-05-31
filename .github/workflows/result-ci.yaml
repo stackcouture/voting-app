@@ -128,7 +128,7 @@ jobs:
       - name: Sign Docker Image
         run: |
           cosign sign --yes \
-            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$DIGEST
+            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME@$DIGEST
   
   update-gitops:
     needs: build-scan-push-sign
