@@ -178,7 +178,7 @@ jobs:
           cd apps/vote/overlays/dev
 
           kustomize edit set image \
-          asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/result=asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/vote:${IMAGE_TAG}
+          asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/vote=asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/vote:${IMAGE_TAG}
 
       - name: Commit Changes
         run: |
