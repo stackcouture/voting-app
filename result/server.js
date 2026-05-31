@@ -5,20 +5,23 @@ const cookieParser = require('cookie-parser');
 const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
+const app = express();
 
-const client = require('prom-client');
+const promBundle = require("express-prom-bundle");
 
-const register = client.register;
+const metricsMiddleware = promBundle({
+  includeMethod: true,
+  includePath: true,
+  includeStatusCode: true,
 
-/*
-|--------------------------------------------------------------------------
-| Prometheus Metrics
-|--------------------------------------------------------------------------
-*/
-
-client.collectDefaultMetrics({
-  timeout: 5000
+  promClient: {
+    collectDefaultMetrics: {}
+  }
 });
+app.use(metricsMiddleware);
+// client.collectDefaultMetrics({
+//   timeout: 5000
+// });
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +29,7 @@ client.collectDefaultMetrics({
 |--------------------------------------------------------------------------
 */
 
-const app = express();
+
 const server = http.Server(app);
 const io = socketIo(server, {
   cors: {
@@ -34,7 +37,7 @@ const io = socketIo(server, {
   }
 });
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 8080;
 
 /*
 |--------------------------------------------------------------------------
@@ -185,17 +188,17 @@ app.get('/', function (req, res) {
 |--------------------------------------------------------------------------
 */
 
-app.get('/metrics', async (req, res) => {
-  try {
-    const metrics = await register.metrics();
-    res.set('Content-Type', register.contentType);
-    res.status(200).end(metrics);
-  } catch (err) {
-    console.error('Metrics endpoint failed');
-    console.error(err.message);
-    res.status(500).end();
-  }
-});
+// app.get('/metrics', async (req, res) => {
+//   try {
+//     const metrics = await register.metrics();
+//     res.set('Content-Type', register.contentType);
+//     res.status(200).end(metrics);
+//   } catch (err) {
+//     console.error('Metrics endpoint failed');
+//     console.error(err.message);
+//     res.status(500).end();
+//   }
+// });
 
 /*
 |--------------------------------------------------------------------------
