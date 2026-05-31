@@ -1,6 +1,6 @@
 FROM node:18-slim
 
-ENV NODE_ENV=production
+ENV NODE_ENV=dev
 ENV PORT=8080
 
 RUN apt-get update && \

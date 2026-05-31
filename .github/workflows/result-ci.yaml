@@ -76,13 +76,26 @@ jobs:
       - name: Configure Docker
         run: |
           gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
+      
+      - name: Set up Docker Buildx 
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build and Push Docker Image 
+        uses: docker/build-push-action@v6 
+        with: 
+          context: ./result 
+          push: true 
+          tags: | 
+            ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} 
+          cache-from: type=gha 
+          cache-to: type=gha,mode=max
 
-      - name: Build Docker Image
-        working-directory: ./result
-        run: |
-          docker build \
-            -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG \
-            .
+      # - name: Build Docker Image
+      #   working-directory: ./result
+      #   run: |
+      #     docker build \
+      #       -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG \
+      #       .
 
       - name: Run Trivy Scan
         uses: aquasecurity/trivy-action@v0.36.0
@@ -93,10 +106,10 @@ jobs:
           ignore-unfixed: true
           severity: CRITICAL,HIGH
 
-      - name: Push Docker Image
-        run: |
-          docker push \
-            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+      # - name: Push Docker Image
+      #   run: |
+      #     docker push \
+      #       $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
