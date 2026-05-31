@@ -1,4 +1,4 @@
-name: Build vote
+name: Vote CI/CD Pipeline
 
 on:
   push:
@@ -21,6 +21,14 @@ env:
   REPOSITORY: vote-docker-repo
   IMAGE_NAME: vote
   IMAGE_TAG: ${{ github.sha }}
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: vote-ci
+  cancel-in-progress: true
 
 jobs:
 
@@ -79,38 +87,39 @@ jobs:
         run: |
           gcloud auth configure-docker $REGION-docker.pkg.dev --quiet
 
-      # - name: Build Docker Image
-      #   working-directory: ./vote
-      #   run: |
-      #     docker build \
-      #       -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG \
-      #       .
-      - name: Set up Docker Buildx 
-        uses: docker/setup-buildx-action@v3
-      
-      - name: Build and Push Docker Image 
-        uses: docker/build-push-action@v6 
-        with: 
-          context: ./vote 
-          push: true 
-          tags: | 
-            ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }} 
-          cache-from: type=gha 
-          cache-to: type=gha,mode=max
+      - name: Build Docker Image
+        working-directory:  ./vote
+        run: |
+          docker build \
+            -t vote:${IMAGE_TAG} \
+            .
 
       - name: Run Trivy Scan
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          image-ref: vote:${{ env.IMAGE_TAG }}
           format: table
           exit-code: 0
           ignore-unfixed: true
           severity: CRITICAL,HIGH
 
-      # - name: Push Docker Image
-      #   run: |
-      #     docker push \
-      #       $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: vote:${{ env.IMAGE_TAG }}
+          format: spdx-json
+          output-file: sbom.spdx.json
+
+      - name: Tag Docker Image
+        run: |
+          docker tag \
+            vote:$IMAGE_TAG \
+            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+
+      - name: Push Docker Image
+        run: |
+          docker push \
+            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
@@ -130,6 +139,13 @@ jobs:
         run: |
           cosign sign --yes \
             $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME@$DIGEST
+
+      - name: Attest SBOM
+        run: |
+          cosign attest --yes \
+            --predicate sbom.spdx.json \
+            --type spdx \
+            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME@$DIGEST
   
   update-gitops:
     needs: build-scan-push-sign
@@ -141,11 +157,28 @@ jobs:
         with:
           repository: stackcouture/gitops-microservices-platform
           token: ${{ secrets.GITOPS_TOKEN }}
+          fetch-depth: 0
+
+      - name: Install Kustomize
+        run: |
+          KUSTOMIZE_VERSION=v5.4.2
+
+          curl -sLo kustomize.tar.gz \
+          https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64.tar.gz
+
+          tar -xzf kustomize.tar.gz
+
+          chmod +x kustomize
+          sudo mv kustomize /usr/local/bin/
+
+          kustomize version
 
       - name: Update Image Tag
         run: |
-          sed -i "s|newTag:.*|newTag: ${IMAGE_TAG}|g" \
-          apps/vote/overlays/dev/kustomization.yaml
+          cd apps/vote/overlays/dev
+
+          kustomize edit set image \
+          asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/result=asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/vote:${IMAGE_TAG}
 
       - name: Commit Changes
         run: |
@@ -154,8 +187,17 @@ jobs:
 
           git add apps/vote/overlays/dev/kustomization.yaml
 
-          git commit -m "Update vote-app image to ${IMAGE_TAG}" || echo "No changes "
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore(vote): update image to ${IMAGE_TAG}"
+          fi
 
       - name: Push Changes
         run: |
-          git push
+          if git log origin/main..HEAD --oneline | grep .; then
+            git push
+          else
+            echo "Nothing to push"
+          fi
+
