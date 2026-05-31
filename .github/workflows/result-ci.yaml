@@ -115,11 +115,20 @@ jobs:
         uses: sigstore/cosign-installer@v3
         with:
           cosign-release: v2.2.4
+      
+      - name: Get image digest
+        id: digest
+        run: |
+          DIGEST=$(gcloud artifacts docker images describe \
+            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG \
+            --format='value(image_summary.digest)')
+
+          echo "DIGEST=$DIGEST" >> $GITHUB_ENV
 
       - name: Sign Docker Image
         run: |
           cosign sign --yes \
-            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$DIGEST
   
   update-gitops:
     needs: build-scan-push-sign
