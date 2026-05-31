@@ -91,7 +91,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       # - name: Build Docker Image
-      #   working-directory: ./result
+      #   working-directory:  ./result
       #   run: |
       #     docker build \
       #       -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG \
