@@ -11,7 +11,7 @@ Built on top of [Docker's Example Voting App](https://github.com/dockersamples/e
 - [Services](#services)
 - [Repository Structure](#repository-structure)
 - [Prerequisites](#prerequisites)
-- [CI / Image Workflow](##ci--image-workflow)
+- [End-to-End Deployment Flow](#end-to-end-deployment-flow)
 - [Seeding Test Data](#seeding-test-data)
 - [Notes](#notes)
 - [Acknowledgements](#acknowledgements)
@@ -87,28 +87,34 @@ voting-app/
 ```
 ---
 
-## CI / Image Workflow
+## End-to-End Deployment Flow
+This platform follows a fully automated GitOps-based deployment workflow using **GitHub Actions**, **Google Artifact Registry**, **Kustomize**, and **ArgoCD**.
 
-The `.github/workflows/` directory contains GitHub Actions pipelines that are triggered on push to `main`. The workflows:
+---
 
-1. Build a Docker image for each service (`vote`, `result`)
-2. Tag the image with the commit SHA
-3. Push the tagged image to a container registry (e.g. GHCR)
+## Table of Contents
 
-These images are then referenced by the [`gitops-microservices-platform`](https://github.com/stackcouture/gitops-microservices-platform) repo, where ArgoCD picks up the updated image tags and deploys them to the Kubernetes cluster.
+- [High-Level Flow](#high-level-flow)
+- [Detailed Deployment Workflow](#detailed-deployment-workflow)
+  - [1. Developer Pushes Code](#1-developer-pushes-code)
+  - [2. GitHub Actions Pipeline Starts](#2-github-actions-pipeline-starts)
+  - [3. Unit Testing Stage](#3-unit-testing-stage)
+  - [4. Authenticate to Google Cloud](#4-authenticate-to-google-cloud)
+  - [5. Docker Image Build](#5-docker-image-build)
+  - [6. Vulnerability Scanning with Trivy](#6-vulnerability-scanning-with-trivy)
+  - [7. SBOM Generation](#7-sbom-generation)
+  - [8. Push Image to Artifact Registry](#8-push-image-to-artifact-registry)
+  - [9. Image Signing with Cosign](#9-image-signing-with-cosign)
+  - [10. SBOM Attestation](#10-sbom-attestation)
+  - [11. GitOps Repository Update](#11-gitops-repository-update)
+  - [12. ArgoCD Detects Git Changes](#12-argocd-detects-git-changes)
+  - [13. Kubernetes Deployment](#13-kubernetes-deployment)
+  - [14. Deployment Completed](#14-deployment-completed)
+- [Why This Architecture Matters](#why-this-architecture-matters)
+- [Platform Components](#platform-components)
+- [Repositories](#repositories)
 
-```
-Code push → GitHub Actions builds image
-                      │
-                      ▼
-          Image pushed to registry (:<sha>)
-                      │
-                      ▼
-     gitops-microservices-platform image tag updated
-                      │
-                      ▼
-          ArgoCD syncs new image to cluster ✓
-```
+---
 
 ---
 
