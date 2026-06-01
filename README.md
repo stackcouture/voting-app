@@ -90,9 +90,7 @@ voting-app/
 ## End-to-End Deployment Flow
 This platform follows a fully automated GitOps-based deployment workflow using **GitHub Actions**, **Google Artifact Registry**, **Kustomize**, and **ArgoCD**.
 
----
-
-## Table of Contents
+### Table of Contents
 
 - [High-Level Flow](#high-level-flow)
 - [Detailed Deployment Workflow](#detailed-deployment-workflow)
@@ -115,8 +113,47 @@ This platform follows a fully automated GitOps-based deployment workflow using *
 - [Repositories](#repositories)
 
 ---
+#### High-Level Flow
+
+```text
+Developer pushes code
+          │
+          ▼
+GitHub Actions CI Pipeline Triggered
+          │
+          ▼
+Application Build + Unit Tests
+          │
+          ▼
+Docker Image Built
+          │
+          ▼
+Trivy Security Scan
+          │
+          ▼
+SBOM Generated
+          │
+          ▼
+Cosign Signs Image
+          │
+          ▼
+Docker Image Pushed to Artifact Registry
+          │
+          ▼
+GitOps Repository Updated
+          │
+          ▼
+ArgoCD Detects Git Change
+          │
+          ▼
+Kubernetes Cluster Synced
+          │
+          ▼
+New Application Version Deployed
+```
 
 ---
+
 
 ## Acknowledgements
 
