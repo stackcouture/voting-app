@@ -39,6 +39,7 @@ RUN mkdir -p /tmp/gunicorn && \
 
 USER 10001:10001
 
+# Expose the port 8080
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
