@@ -48,3 +48,80 @@ Built on top of [Docker's Example Voting App](https://github.com/dockersamples/e
 3. The **result** frontend reads from PostgreSQL and displays live totals
 
 ---
+## Services
+
+| Service  | Language            | Port (host) |   Description                                    |
+|----------|---------------------|-------------|--------------------------------------------------|
+| `vote`   | Python (Flask)      | `8080`      | Web UI for casting votes                         |
+| `result` | Node.js (Express)   | `8081`      | Web UI for viewing real-time results             |
+| `worker` | C# (.NET)           |  —          | Background processor: Redis → PostgreSQL         |
+| `redis`  | `redis:alpine`      |  —          | In-memory message queue for incoming votes       |
+| `db`     | `postgres:15-alpine`| —           | Persistent storage for processed vote results    |
+| `seed`   | Shell script        | —           | One-shot service to seed the DB with sample votes|
+
+All services communicate over two isolated Docker networks:
+- **`front-tier`** — vote, result (browser-accessible)
+- **`back-tier`** — vote, result, worker, redis, db (internal only)
+
+---
+
+## Repository Structure
+
+```
+voting-app/
+├── .github/
+│   └── workflows/           # GitHub Actions CI pipelines
+├── .vscode/                 # Editor settings
+├── healthchecks/            # Shell scripts for Redis & Postgres health probes
+│   ├── redis.sh
+│   └── postgres.sh
+├── result/                  # Node.js result frontend
+├── seed-data/               # One-shot vote seeder (Docker Compose profile)
+├── vote/                    # Python/Flask vote frontend
+├── worker/                  # C# worker service
+├── architecture.excalidraw.png
+├── docker-compose.yml       # Build-from-source compose file (local dev)
+├── docker-compose.images.yml# Pre-built images compose file (quick start)
+├── docker-stack.yml         # Docker Swarm stack definition
+├── MAINTAINERS
+└── LICENSE                  # Apache 2.0
+```
+---
+
+## CI / Image Workflow
+
+The `.github/workflows/` directory contains GitHub Actions pipelines that are triggered on push to `main`. The workflows:
+
+1. Build a Docker image for each service (`vote`, `result``)
+2. Tag the image with the commit SHA
+3. Push the tagged image to a container registry (e.g. GHCR)
+
+These images are then referenced by the [`gitops-microservices-platform`](https://github.com/stackcouture/gitops-microservices-platform) repo, where ArgoCD picks up the updated image tags and deploys them to the Kubernetes cluster.
+
+```
+Code push → GitHub Actions builds image
+                      │
+                      ▼
+          Image pushed to registry (:<sha>)
+                      │
+                      ▼
+     gitops-microservices-platform image tag updated
+                      │
+                      ▼
+          ArgoCD syncs new image to cluster ✓
+```
+
+---
+
+## Acknowledgements
+
+This project is based on Docker's Example Voting App:
+https://github.com/dockersamples/example-voting-app
+
+Original project licensed under Apache 2.0.
+
+---
+
+## License
+
+[Apache 2.0](./LICENSE)
