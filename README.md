@@ -11,7 +11,7 @@ Built on top of [Docker's Example Voting App](https://github.com/dockersamples/e
 - [Services](#services)
 - [Repository Structure](#repository-structure)
 - [Prerequisites](#prerequisites)
-- [CI / Image Workflow](#end-to-end-deployment-flow)
+- [CI / Image Workflow](##ci--image-workflow)
 - [Seeding Test Data](#seeding-test-data)
 - [Notes](#notes)
 - [Acknowledgements](#acknowledgements)
