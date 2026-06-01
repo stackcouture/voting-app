@@ -11,7 +11,7 @@ Built on top of [Docker's Example Voting App](https://github.com/dockersamples/e
 - [Services](#services)
 - [Repository Structure](#repository-structure)
 - [Prerequisites](#prerequisites)
-- [End-to-End Deployment Flow](#end-to-dnd-deployment-flow)
+- [CI / Image Workflow](#end-to-end-deployment-flow)
 - [Seeding Test Data](#seeding-test-data)
 - [Notes](#notes)
 - [Acknowledgements](#acknowledgements)
@@ -87,7 +87,7 @@ voting-app/
 ```
 ---
 
-## End-to-End Deployment Flow
+## CI / Image Workflow
 
 The `.github/workflows/` directory contains GitHub Actions pipelines that are triggered on push to `main`. The workflows:
 
