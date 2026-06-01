@@ -11,8 +11,7 @@ Built on top of [Docker's Example Voting App](https://github.com/dockersamples/e
 - [Services](#services)
 - [Repository Structure](#repository-structure)
 - [Prerequisites](#prerequisites)
-- [Running Locally](#running-locally)
-- [CI / Image Workflow](#ci--image-workflow)
+- [End-to-End Deployment Flow](#end-to-dnd-deployment-flow)
 - [Seeding Test Data](#seeding-test-data)
 - [Notes](#notes)
 - [Acknowledgements](#acknowledgements)
@@ -88,11 +87,11 @@ voting-app/
 ```
 ---
 
-## CI / Image Workflow
+## End-to-End Deployment Flow
 
 The `.github/workflows/` directory contains GitHub Actions pipelines that are triggered on push to `main`. The workflows:
 
-1. Build a Docker image for each service (`vote`, `result``)
+1. Build a Docker image for each service (`vote`, `result`)
 2. Tag the image with the commit SHA
 3. Push the tagged image to a container registry (e.g. GHCR)
 
