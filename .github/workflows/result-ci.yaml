@@ -170,6 +170,9 @@ jobs:
           sudo mv kustomize /usr/local/bin/
 
           kustomize version
+      - name: Debug
+        run: |
+          echo "IMAGE_TAG=${IMAGE_TAG}"
 
       - name: Update Image Tag
         run: |
@@ -177,24 +180,44 @@ jobs:
 
           kustomize edit set image \
           asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/result=asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/result:${IMAGE_TAG}
+      
+      - name: Verify
+        run: |
+          cat apps/result/overlays/dev/kustomization.yaml
 
-      - name: Commit Changes
+      - name: Commit Changes and Push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
           git add apps/result/overlays/dev/kustomization.yaml
+          git commit -m "chore(result): update image to ${IMAGE_TAG}" || exit 0
+          git push 
 
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "chore(result): update image to ${IMAGE_TAG}"
-          fi
+      # - name: Update Image Tag
+      #   run: |
+      #     cd apps/result/overlays/dev
 
-      - name: Push Changes
-        run: |
-          if git log origin/main..HEAD --oneline | grep .; then
-            git push
-          else
-            echo "Nothing to push"
-          fi
+      #     kustomize edit set image \
+      #     asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/result=asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/result:${IMAGE_TAG}
+
+      # - name: Commit Changes
+      #   run: |
+      #     git config user.name "github-actions"
+      #     git config user.email "github-actions@github.com"
+
+      #     git add apps/result/overlays/dev/kustomization.yaml
+
+      #     if git diff --cached --quiet; then
+      #       echo "No changes to commit"
+      #     else
+      #       git commit -m "chore(result): update image to ${IMAGE_TAG}"
+      #     fi
+
+      # - name: Push Changes
+      #   run: |
+      #     if git log origin/main..HEAD --oneline | grep .; then
+      #       git push
+      #     else
+      #       echo "Nothing to push"
+      #     fi
