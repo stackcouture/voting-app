@@ -16,7 +16,6 @@ namespace Worker
         {
             try
             {
-                # var pgsql = OpenDbConnection("Server=db;Username=postgres;Password=postgres;");
                 var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "db";
                 var dbUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres";
                 var dbPassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres";
@@ -54,7 +53,7 @@ namespace Worker
                         if (!pgsql.State.Equals(System.Data.ConnectionState.Open))
                         {
                             Console.WriteLine("Reconnecting DB");
-                            # pgsql = OpenDbConnection("Server=db;Username=postgres;Password=postgres;");
+
                             var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "db";
                             var dbUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres";
                             var dbPassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres";
@@ -62,7 +61,6 @@ namespace Worker
                             var connectionString =
                                 $"Server={dbHost};Username={dbUser};Password={dbPassword};";
 
-                            # var pgsql = OpenDbConnection(connectionString);
                             pgsql = OpenDbConnection(connectionString);
                         }
                         else
