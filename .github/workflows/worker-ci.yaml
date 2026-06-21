@@ -8,13 +8,6 @@ on:
       - 'worker/**' 
       - '.github/workflows/worker-ci.yaml'
 
-  pull_request:
-    branches:
-      - main
-    paths: 
-      - 'worker/**' 
-      - '.github/workflows/worker-ci.yaml'
-
 env:
   PROJECT_ID: "project-18ee516c-a108-431d-a73"
   REGION: asia-south1
@@ -26,13 +19,9 @@ permissions:
   id-token: write
   contents: read
 
-concurrency:
-  group: worker-ci
-  cancel-in-progress: true
-
 jobs:
 
-  test:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -54,17 +43,10 @@ jobs:
       
       - name: Build Docker Image 
         working-directory: ./worker 
-        run: | 
-          docker build \  
-            -t $IMAGE_NAME:$IMAGE_TAG \
-            . 
+        run: docker build -t $IMAGE_NAME:$IMAGE_TAG .
       
       - name: Tag Docker Image 
-        run: | 
-          docker tag \ 
-            $IMAGE_NAME:$IMAGE_TAG \ 
-            $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG 
+        run: docker tag $IMAGE_NAME:$IMAGE_TAG $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
             
       - name: Push Docker Image 
-        run: | 
-          docker push \ $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+        run: docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
