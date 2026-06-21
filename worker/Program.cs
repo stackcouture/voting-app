@@ -53,14 +53,6 @@ namespace Worker
                         if (!pgsql.State.Equals(System.Data.ConnectionState.Open))
                         {
                             Console.WriteLine("Reconnecting DB");
-
-                            var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "db";
-                            var dbUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres";
-                            var dbPassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres";
-
-                            var connectionString =
-                                $"Server={dbHost};Username={dbUser};Password={dbPassword};";
-
                             pgsql = OpenDbConnection(connectionString);
                         }
                         else
