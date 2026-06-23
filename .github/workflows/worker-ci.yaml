@@ -50,3 +50,47 @@ jobs:
             
       - name: Push Docker Image 
         run: docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:$IMAGE_TAG
+      
+      - name: Checkout GitOps Repo
+        uses: actions/checkout@v4
+        with:
+          repository: stackcouture/gitops-microservices-platform
+          token: ${{ secrets.GITOPS_TOKEN }}
+          fetch-depth: 0
+
+      - name: Install Kustomize
+        run: |
+          KUSTOMIZE_VERSION=v5.4.2
+
+          curl -sLo kustomize.tar.gz \
+          https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64.tar.gz
+
+          tar -xzf kustomize.tar.gz
+
+          chmod +x kustomize
+          sudo mv kustomize /usr/local/bin/
+
+          kustomize version
+      - name: Debug
+        run: |
+          echo "IMAGE_TAG=${IMAGE_TAG}"
+
+      - name: Update Image Tag
+        run: |
+          cd apps/worker/overlays/dev
+
+          kustomize edit set image \
+          asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/vote=asia-south1-docker.pkg.dev/project-18ee516c-a108-431d-a73/vote-docker-repo/worker:${IMAGE_TAG}
+      
+      - name: Verify
+        run: |
+          cat apps/worker/overlays/dev/kustomization.yaml
+
+      - name: Commit Changes and Push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add apps/worker/overlays/dev/kustomization.yaml
+          git commit -m "chore(worker): update image to ${IMAGE_TAG}" || exit 0
+          git push 

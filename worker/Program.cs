@@ -17,11 +17,12 @@ namespace Worker
             try
             {
                 var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "db";
+                var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "votingdb";
                 var dbUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres";
                 var dbPassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "postgres";
 
                 var connectionString =
-                    $"Server={dbHost};Username={dbUser};Password={dbPassword};";
+                    $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPassword};";
 
                 var pgsql = OpenDbConnection(connectionString);
                 var redisConn = OpenRedisConnection("redis");
