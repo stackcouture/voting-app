@@ -8,30 +8,148 @@
     <meta name="keywords" content="docker-compose, docker, stack">
     <meta name="author" content="Tutum dev team">
     <link rel='stylesheet' href="{{ url_for('static',filename='stylesheets/style.css') }}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   </head>
   <body>
+    <header class="platform-header">
+
+    <div class="header-row">
+
+        <div class="header-left">
+
+            <div class="platform-title">
+
+                <i class="fa-solid fa-cubes"></i>
+
+                <div>
+
+                    <h2>Cloud Native Platform</h2>
+
+                    <span>Deployment Strategy Survey</span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="header-right">
+
+            <span class="environment-badge">
+
+                <i class="fa-solid fa-circle"></i>
+
+                Production
+
+            </span>
+
+            <a href="https://result.stackcouture.online"
+               class="result-btn">
+                <i class="fa-solid fa-chart-column"></i>
+                View Results
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="header-description">
+
+        Choose the deployment strategy you would use for a production Kubernetes
+        environment.
+
+    </div>
+
+</header>
+
     <div id="content-container">
       <div id="content-container-center">
-        <h3>{{option_a}} vs {{option_b}} Demo</h3>
-        <form id="choice" name='form' method="POST" action="/">
-          <button id="a" type="submit" name="vote" class="a" value="a">{{option_a}}</button>
-          <button id="b" type="submit" name="vote" class="b" value="b">{{option_b}}</button>
+        <form id="choice" method="POST" action="/">
+
+            <div class="strategy-grid">
+
+                <!-- Option A -->
+
+                <button
+    id="a"
+    type="submit"
+    name="vote"
+    value="a"
+    class="strategy-card canary"> 
+
+    <div class="strategy-icon canary-icon">
+        <i class="fa-solid fa-rocket"></i>
+    </div>
+
+    <h2>{{option_a}}</h2>
+
+    <ul class="feature-list">
+        <li><i class="fa-solid fa-circle-check"></i> Progressive traffic shifting</li>
+        <li><i class="fa-solid fa-circle-check"></i> Automated rollback</li>
+        <li><i class="fa-solid fa-circle-check"></i> Prometheus Analysis</li>
+    </ul>
+
+    <span class="select-btn">
+        Select Strategy →
+    </span>
+
+</button>
+
+                <!-- Option B -->
+
+                <button
+    id="b"
+    type="submit"
+    name="vote"
+    value="b"
+    class="strategy-card bluegreen">
+
+    <div class="strategy-icon bluegreen-icon">
+        <i class="fa-solid fa-shuffle"></i>
+    </div>
+
+    <h2>{{option_b}}</h2>
+
+    <ul class="feature-list">
+        <li><i class="fa-solid fa-circle-check"></i> Instant environment switch</li>
+        <li><i class="fa-solid fa-circle-check"></i> Fast rollback</li>
+        <li><i class="fa-solid fa-circle-check"></i> Zero downtime</li>
+    </ul>
+
+    <span class="select-btn">
+        Select Strategy →
+    </span>
+
+</button>
+
+            </div>
+
         </form>
-        <div id="tip">
-          (Tip: you can change your vote : Testing process)
-        </div>
-        <div id="hostname">
-          Processed by container ID {{hostname}}
-        </div>
       </div>
     </div>
+
+    <footer class="bg-primary text-center text-white">
+    <!-- Grid container -->
+  
+    <!-- Copyright -->
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+       <h4>Powered By</h4>
+        © 2026 Copyright:
+        <a class="text-white" href="https://stackcouture.online/">Stackcouture</a>
+    </div>
+    <!-- Copyright -->
+</footer>
+
     <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     {% if vote %}
     <script>
-      var vote = "{{vote}}";
+      /* var vote = "{{vote}}";
 
       if(vote == "a"){
         $(".a").prop('disabled', true);
@@ -42,7 +160,34 @@
         $(".b").prop('disabled', true);
         $(".b").html('{{option_b}} <i class="fa fa-check-circle"></i>');
         $(".a").css('opacity','0.5');
-      }
+      } */
+     var vote="{{vote}}";
+
+if(vote=="a"){
+
+    $("#a")
+        .css({
+            "border":"2px solid #22c55e",
+            "background":"#163b2a"
+        })
+        .prop("disabled",true);
+
+    $("#b").css("opacity",".45");
+
+}
+
+if(vote=="b"){
+
+    $("#b")
+        .css({
+            "border":"2px solid #22c55e",
+            "background":"#163b2a"
+        })
+        .prop("disabled",true);
+
+    $("#a").css("opacity",".45");
+
+}
     </script>
     {% endif %}
   </body>

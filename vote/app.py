@@ -9,8 +9,8 @@ import json
 import logging
 import uuid
 
-option_a = os.getenv('OPTION_A', "Cats")
-option_b = os.getenv('OPTION_B', "Dogs")
+option_a = os.getenv('OPTION_A', "Canary")
+option_b = os.getenv('OPTION_B', "Blue-Green")
 hostname = socket.gethostname()
 
 app = Flask(__name__)
