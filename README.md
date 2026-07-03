@@ -11,7 +11,7 @@ Built on top of [Docker's Example Voting App](https://github.com/dockersamples/e
 - [Services](#services)
 - [Repository Structure](#repository-structure)
 - [Prerequisites](#prerequisites)
-- [End-to-End Deployment Flow](#end-to-end-deployment-flow)
+- [End-to-End GitOps Deployment Architecture](#end-to-end-deployment-flow)
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
 
@@ -75,7 +75,10 @@ All services communicate over two isolated Docker networks:
 ```
 voting-app/
 ├── .github/
-│   └── workflows/           # GitHub Actions CI pipelines
+│   └── workflows/  # GitHub Actions CI pipelines
+|          result-ci.yaml
+           vote-ci.yaml
+           worker-ci.yaml           
 ├── .vscode/                 # Editor settings
 ├── healthchecks/            # Shell scripts for Redis & Postgres health probes
 │   ├── redis.sh
@@ -93,7 +96,7 @@ voting-app/
 ```
 ---
 
-## End-to-End Deployment Flow
+## End-to-End GitOps Deployment Architecture 
 This platform follows a fully automated GitOps-based deployment workflow using **GitHub Actions**, **Google Artifact Registry**, **Kustomize**, and **ArgoCD**.
 
 ### Table of Contents
@@ -122,40 +125,34 @@ This platform follows a fully automated GitOps-based deployment workflow using *
 #### High-Level Flow
 
 ```text
-Developer pushes code
-          │
-          ▼
-GitHub Actions CI Pipeline Triggered
-          │
-          ▼
-Application Build + Unit Tests
-          │
-          ▼
-Docker Image Built
-          │
-          ▼
-Trivy Security Scan
-          │
-          ▼
-SBOM Generated
-          │
-          ▼
-Cosign Signs Image
-          │
-          ▼
-Docker Image Pushed to Artifact Registry
-          │
-          ▼
-GitOps Repository Updated
-          │
-          ▼
-ArgoCD Detects Git Change
-          │
-          ▼
-Kubernetes Cluster Synced
-          │
-          ▼
-New Application Version Deployed
+Developer Commit
+       │
+       ▼
+GitHub Repository
+       │
+       ▼
+GitHub Actions CI
+       │
+       ├── Source Validation
+       ├── Unit Testing
+       ├── Container Build
+       ├── Vulnerability Scan (Trivy)
+       ├── SBOM Generation
+       ├── Container Signing (Cosign)
+       ▼
+Google Artifact Registry
+       │
+       ▼
+GitOps Repository Update
+       │
+       ▼
+ArgoCD Continuous Reconciliation
+       │
+       ▼
+Google Kubernetes Engine (GKE)
+       │
+       ▼
+Application Available to End Users
 ```
 
 ---
@@ -474,6 +471,18 @@ Code Push  ──►  GitHub Actions  ──►  Docker Build
 | Safer production releases    | Security gates (scan, sign, attest) run on every change     |
 | Faster delivery pipeline     | Automation removes manual review and deployment bottlenecks |
 | Reduced manual intervention  | ArgoCD self-heals drift without operator input              |
+
+### Deployment Principles
+
+| Principle                      | Implementation                                            |
+|--------------------------------|-----------------------------------------------------------|
+| GitOps                         | ArgoCD continuously reconciles Kubernetes state from      |  Git                                                                                          |
+| Immutable Artifacts            | Every container image is tagged with the Git commit SHA.  |
+| Zero Trust Authentication      | GitHub Actions authenticates to Google Cloud using OIDC Workload Identity Federation.     |
+| Supply Chain Security          | Trivy, SBOM generation, Cosign signing, and attestation secure the software supply chain. |
+| Infrastructure as Code         | Terraform provisions all cloud infrastructure.            |
+| Declarative Configuration      | Kubernetes manifests are managed with Kustomize.          |
+
 
 ---
 
