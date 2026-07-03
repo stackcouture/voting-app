@@ -20,41 +20,50 @@ Built on top of [Docker's Example Voting App](https://github.com/dockersamples/e
 ## Architecture
 
 ```
-                     ┌───────────────────────────────────────┐
-                     │            front-tier network         │
-                     │                                       │
-     Browser ───────►│  vote (Python)      result (Node.js)  │◄─── Browser
-     :8080           │  port 80             port 80          │     :8081
-                     └────────┬────────────────┬─────────────┘
-                              │                │
-                     ┌────────▼────────────────▼─────────────┐
-                     │             back-tier network         │
-                     │                                       │
-                     │  redis (alpine)     db (postgres:15)  │
-                     │  in-memory queue    persistent store  │
-                     │        ▲                   ▲          │
-                     │        │                   │          │
-                     │        └──── worker (.NET) ┘          │
-                     │                                       │
-                     └───────────────────────────────────────┘
+                     ┌──────────────────────────────────────────────┐
+                     │              Front Tier (GKE)                │
+                     │                                              │
+ Browser ───────────►│  Vote (Python)        Result (Node.js)       │◄──────── Browser
+                     │                                              │
+                     └───────────────┬──────────────────────────────┘
+                                     │
+                     ┌───────────────▼──────────────────────────────┐
+                     │               Back Tier (GKE)                │
+                     │                                              │
+                     │      Redis (Queue)                           │
+                     │           ▲                                  │
+                     │           │                                  │
+                     │      Worker (.NET)                           │
+                     └───────────┬──────────────────────────────────┘
+                                 │
+                                 │ Private IP / Cloud SQL Auth Proxy
+                                 ▼
+                   ┌─────────────────────────────────────┐
+                   │      Cloud SQL for PostgreSQL       │
+                   │      Managed Database (GCP)         │
+                   │      Persistent Storage             │
+                   └─────────────────────────────────────┘
 ```
 
 **Data flow:**
-1. A user casts a vote via the **vote** frontend → stored in **Redis**
-2. The **worker** reads from Redis and writes the result into **PostgreSQL**
-3. The **result** frontend reads from PostgreSQL and displays live totals
+1. User submits a vote through the Vote (Python) application.
+2. The vote is stored in Redis.
+3. The Worker (.NET) continuously reads messages from Redis.
+4. The worker writes the processed vote into Cloud SQL for PostgreSQL.
+5. The Result (Node.js) application reads the latest vote counts from Cloud SQL and displays them   
+   to users.
 
 ---
 ## Services
 
-| Service  | Language            | Port (host) |   Description                                    |
-|----------|---------------------|-------------|--------------------------------------------------|
-| `vote`   | Python (Flask)      | `8080`      | Web UI for casting votes                         |
-| `result` | Node.js (Express)   | `8081`      | Web UI for viewing real-time results             |
-| `worker` | C# (.NET)           |  —          | Background processor: Redis → PostgreSQL         |
-| `redis`  | `redis:alpine`      |  —          | In-memory message queue for incoming votes       |
-| `db`     | `postgres:15-alpine`| —           | Persistent storage for processed vote results    |
-| `seed`   | Shell script        | —           | One-shot service to seed the DB with sample votes|
+| Service    | Language            | Port (host) |   Description                                    |
+|------------|---------------------|-------------|----------------------------------------------------|
+| `vote`     | Python (Flask)      | `8080`      | Web UI for casting votes                         |
+| `result`   | Node.js (Express)   | `8081`      | Web UI for viewing real-time results             |
+| `worker`   | C# (.NET)           |  —          | Background processor: Redis → PostgreSQL         |
+| `redis`    | `redis:alpine`      |  —          | In-memory message queue for incoming votes        |
+| `cloudsql` | `Google Cloud SQL for 
+                PostgreSQL`       | —           | Persistent storage for processed vote results    |
 
 All services communicate over two isolated Docker networks:
 - **`front-tier`** — vote, result (browser-accessible)
