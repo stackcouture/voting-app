@@ -1,7 +1,6 @@
 # voting-app
-A polyglot microservices application for collecting and displaying votes in real time — used as the application workload in the [gitops-platform-engineering](https://github.com/stackcouture/gitops-platform-engineering) portfolio project.
+A production-ready polyglot microservices application demonstrating modern GitOps-based platform engineering practices on Google Cloud Platform (GCP). The platform showcases secure CI/CD, Kubernetes-native deployments, Infrastructure as Code (Terraform), continuous reconciliation with ArgoCD, and supply chain security using Trivy, SBOM, and Cosign.
 
-Built on top of [Docker's Example Voting App](https://github.com/dockersamples/example-voting-app), this repo adds GitHub Actions CI workflows for building and pushing container images as part of a GitOps delivery pipeline.
 
 ---
 
@@ -18,6 +17,8 @@ Built on top of [Docker's Example Voting App](https://github.com/dockersamples/e
 ---
 
 ## Architecture
+
+The application follows a distributed microservices architecture deployed on Google Kubernetes Engine (GKE). Stateless frontend services communicate through Redis for asynchronous processing, while Cloud SQL for PostgreSQL provides managed persistent storage. The platform is designed to demonstrate production-grade deployment patterns, security controls, and GitOps workflows.
 
 ```
                      ┌──────────────────────────────────────────────┐
@@ -60,13 +61,18 @@ Built on top of [Docker's Example Voting App](https://github.com/dockersamples/e
 |------------|---------------------|-------------|----------------------------------------------------|
 | `vote`     | Python (Flask)      | `8080`      | Web UI for casting votes                         |
 | `result`   | Node.js (Express)   | `8081`      | Web UI for viewing real-time results             |
-| `worker`   | C# (.NET)           |  —          | Background processor: Redis → PostgreSQL         |
+| `worker`   | C# (.NET)           |  —          | Consumes vote events from Redis and persists processed results to Cloud SQL for PostgreSQL.         |
 | `redis`    | `redis:alpine`      |  —          | In-memory message queue for incoming votes        |
-| `cloudsql` | `Google Cloud SQL for PostgreSQL`       | `5432`           | Persistent storage for processed vote results    |
+| `cloudsql` | `Google Cloud SQL for PostgreSQL`       | `5432`           | Managed PostgreSQL database providing highly available persistent storage for application data.    |
 
-All services communicate over two isolated Docker networks:
-- **`front-tier`** — vote, result (browser-accessible)
-- **`back-tier`** — vote, result, worker, redis, db (internal only)
+### Network Architecture
+
+For local development, Docker Compose uses two isolated bridge networks:
+
+- front-tier – Browser-facing services
+- back-tier – Internal service communication
+
+In production, Kubernetes Services provide service discovery and internal networking, while Cloud SQL is accessed through a private connection using Cloud SQL Auth Proxy or Private IP.
 
 ---
 
@@ -76,9 +82,9 @@ All services communicate over two isolated Docker networks:
 voting-app/
 ├── .github/
 │   └── workflows/  # GitHub Actions CI pipelines
-|          result-ci.yaml
-           vote-ci.yaml
-           worker-ci.yaml           
+        ├──   result-ci.yaml
+        ├──   vote-ci.yaml
+        └──   worker-ci.yaml           
 ├── .vscode/                 # Editor settings
 ├── healthchecks/            # Shell scripts for Redis & Postgres health probes
 │   ├── redis.sh
@@ -97,7 +103,7 @@ voting-app/
 ---
 
 ## End-to-End GitOps Deployment Architecture 
-This platform follows a fully automated GitOps-based deployment workflow using **GitHub Actions**, **Google Artifact Registry**, **Kustomize**, and **ArgoCD**.
+The platform implements a production-ready GitOps continuous delivery model using **GitHub Actions**, **Google Artifact Registry**, **Kustomize**, **ArgoCD**, and **Google Kubernetes Engine**. Every deployment is fully automated, security validated, cryptographically signed, and version controlled. Declarative infrastructure and continuous reconciliation eliminate configuration drift while enabling repeatable, auditable, and reliable application releases
 
 ### Table of Contents
 
@@ -396,16 +402,19 @@ ArgoCD reconciles the live Kubernetes cluster state with the desired state in Gi
 ArgoCD applies the updated manifests to the GKE cluster:
 
 ```text
-New Image Tag
-        │
-        ▼
-Kubernetes Deployment Updated
-        │
-        ▼
-Pods Recreated
-        │
-        ▼
-Traffic Shifted to New Pods
+Deployment Updated
+       │
+       ▼
+Rolling Update Initiated
+       │
+       ▼
+New ReplicaSet Created
+       │
+       ▼
+Old Pods Terminated Gracefully
+       │
+       ▼
+Traffic Routed to Healthy Pods
 ```
 
 Kubernetes pulls the new image directly from Artifact Registry using the node service account credentials.
@@ -442,6 +451,20 @@ Code Push  ──►  GitHub Actions  ──►  Docker Build
 ```
 ## Why This Architecture Matters
 
+### Architecture Decisions
+
+| Decision                 | Rationale |
+|--------------------------|-----------|
+| GitHub Actions           | Native GitHub integration with scalable CI automation |
+| ArgoCD                   | GitOps continuous reconciliation for Kubernetes |
+| Google Artifact Registry | Secure private container registry integrated with IAM |
+| Kustomize                | Native Kubernetes manifest customization |
+| Terraform                | Declarative Infrastructure as Code provisioning |
+| Cloud SQL                | Managed PostgreSQL with automated backups and high availability |
+| Redis                    | High-performance in-memory message queue |
+| Trivy                    | Container vulnerability scanning |
+| Cosign                   | Container signing and provenance verification |
+
 ### GitOps Benefits
 
 | Benefit                           | Description                                            |
@@ -476,7 +499,7 @@ Code Push  ──►  GitHub Actions  ──►  Docker Build
 
 | Principle                      | Implementation                                            |
 |--------------------------------|-----------------------------------------------------------|
-| GitOps                         | ArgoCD continuously reconciles Kubernetes state from      |  Git                                                                                          |
+| GitOps                         | ArgoCD continuously reconciles Kubernetes state from      |  Git |
 | Immutable Artifacts            | Every container image is tagged with the Git commit SHA.  |
 | Zero Trust Authentication      | GitHub Actions authenticates to Google Cloud using OIDC Workload Identity Federation.     |
 | Supply Chain Security          | Trivy, SBOM generation, Cosign signing, and attestation secure the software supply chain. |
@@ -484,9 +507,7 @@ Code Push  ──►  GitHub Actions  ──►  Docker Build
 | Declarative Configuration      | Kubernetes manifests are managed with Kustomize.          |
 
 
----
-
-## Platform Components
+### Platform Components
 
 | Component                 | Responsibility                                               |
 |---------------------------|--------------------------------------------------------------|
@@ -499,6 +520,14 @@ Code Push  ──►  GitHub Actions  ──►  Docker Build
 | **ArgoCD**                | Continuous Kubernetes reconciliation                         |
 | **GKE**                   | Container orchestration platform                             |
 | **Terraform**             | Infrastructure provisioning (GKE, IAM, networking, registry) |
+| **Cloud SQL**             | Managed PostgreSQL database                                  |
+| **Redis**                 | Cache queue                                                  |
+| **GitHub**                | Source code management                                       |
+
+
+### Architecture Summary
+
+This platform demonstrates a production-grade GitOps architecture on Google Cloud Platform. Infrastructure is provisioned using Terraform, applications are continuously integrated through GitHub Actions, secured with Trivy and Cosign, stored in Artifact Registry, and deployed to Google Kubernetes Engine via ArgoCD. Declarative configuration, immutable container images, automated reconciliation, and supply chain security collectively provide a scalable, repeatable, and secure deployment platform.
 
 ---
 ## License
