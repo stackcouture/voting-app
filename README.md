@@ -62,8 +62,7 @@ Built on top of [Docker's Example Voting App](https://github.com/dockersamples/e
 | `result`   | Node.js (Express)   | `8081`      | Web UI for viewing real-time results             |
 | `worker`   | C# (.NET)           |  —          | Background processor: Redis → PostgreSQL         |
 | `redis`    | `redis:alpine`      |  —          | In-memory message queue for incoming votes        |
-| `cloudsql` | `Google Cloud SQL for 
-                PostgreSQL`       | —           | Persistent storage for processed vote results    |
+| `cloudsql` | `Google Cloud SQL for PostgreSQL`       | `5432`           | Persistent storage for processed vote results    |
 
 All services communicate over two isolated Docker networks:
 - **`front-tier`** — vote, result (browser-accessible)
