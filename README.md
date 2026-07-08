@@ -20,39 +20,9 @@ A production-ready polyglot microservices application demonstrating modern GitOp
 
 The application follows a distributed microservices architecture deployed on Google Kubernetes Engine (GKE). Stateless frontend services communicate through Redis for asynchronous processing, while Cloud SQL for PostgreSQL provides managed persistent storage. The platform is designed to demonstrate production-grade deployment patterns, security controls, and GitOps workflows.
 
-```
-                     ┌──────────────────────────────────────────────┐
-                     │              Front Tier (GKE)                │
-                     │                                              │
- Browser ───────────►│  Vote (Python)        Result (Node.js)       │◄──────── Browser
-                     │                                              │
-                     └───────────────┬──────────────────────────────┘
-                                     │
-                     ┌───────────────▼──────────────────────────────┐
-                     │               Back Tier (GKE)                │
-                     │                                              │
-                     │      Redis (Queue)                           │
-                     │           ▲                                  │
-                     │           │                                  │
-                     │      Worker (.NET)                           │
-                     └───────────┬──────────────────────────────────┘
-                                 │
-                                 │ Private IP / Cloud SQL Auth Proxy
-                                 ▼
-                   ┌─────────────────────────────────────┐
-                   │      Cloud SQL for PostgreSQL       │
-                   │      Managed Database (GCP)         │
-                   │      Persistent Storage             │
-                   └─────────────────────────────────────┘
-```
+![Project Diagram](docs/images/architecture.png "Architecture")
 
-**Data flow:**
-1. User submits a vote through the Vote (Python) application.
-2. The vote is stored in Redis.
-3. The Worker (.NET) continuously reads messages from Redis.
-4. The worker writes the processed vote into Cloud SQL for PostgreSQL.
-5. The Result (Node.js) application reads the latest vote counts from Cloud SQL and displays them   
-   to users.
+![Data Flow](docs/images/data-flow.png "Data Flow")
 
 ---
 ## Services
