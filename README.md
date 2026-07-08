@@ -1,6 +1,122 @@
-# voting-app
-A production-ready polyglot microservices application demonstrating modern GitOps-based platform engineering practices on Google Cloud Platform (GCP). The platform showcases secure CI/CD, Kubernetes-native deployments, Infrastructure as Code (Terraform), continuous reconciliation with ArgoCD, and supply chain security using Trivy, SBOM, and Cosign.
 
+# 🚀 Project Overview
+
+This project demonstrates a **production-inspired cloud-native microservices platform** built on **Google Cloud Platform (GCP)** and deployed to a **private Google Kubernetes Engine (GKE)** cluster. The platform showcases modern **DevOps**, **GitOps**, and **Kubernetes** practices by implementing the complete application lifecycle—from infrastructure provisioning and continuous integration to secure deployment, observability, automation, and day-to-day operations.
+
+The platform is designed with a modular architecture, enabling each layer to evolve independently while following cloud-native design principles such as Infrastructure as Code (IaC), declarative deployments, progressive delivery, automated scaling, security, and operational visibility.
+
+---
+
+## Application Architecture
+
+The solution is based on a distributed voting application composed of three independent microservices:
+
+| Service            | Technology | Responsibility                                                                                                      |
+| ------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Vote Service**   | Python     | Accepts user votes through a web interface and publishes them to a Redis queue.                                     |
+| **Worker Service** | .NET       | Continuously consumes vote messages from Redis, processes them, and stores the results in Cloud SQL for PostgreSQL. |
+| **Result Service** | Node.js    | Retrieves the latest vote counts from Cloud SQL and displays real-time results to users.                            |
+
+The application follows an **asynchronous event-driven architecture**, where **Redis** acts as the message broker between the user-facing services and the background processing service. This design decouples request processing from database operations, improving scalability, responsiveness, and overall platform resilience.
+
+---
+
+## Platform Architecture
+
+The entire platform runs on a **private Google Kubernetes Engine (GKE)** cluster and is managed through a **GitOps** workflow.
+
+Application source code is continuously integrated using **GitHub Actions**, where container images are built, scanned, signed, and published to **Google Artifact Registry**. The CI pipeline automatically updates the GitOps repository, allowing **ArgoCD** to synchronize the desired state with the Kubernetes cluster.
+
+Application deployments are managed using **Argo Rollouts**, implementing:
+
+* **Canary Deployment** for the **Vote Service**
+* **Blue-Green Deployment** for the **Result Service**
+* Standard **Deployment** for the **Worker Service**
+
+This deployment strategy enables controlled application releases while minimizing deployment risk and reducing service downtime.
+
+---
+
+## Platform Components
+
+The platform integrates several cloud-native technologies to provide security, automation, scalability, and operational visibility.
+
+| Category                         | Technologies                               |
+| -------------------------------- | ------------------------------------------ |
+| **Infrastructure as Code**       | Terraform                                  |
+| **Container Orchestration**      | Google Kubernetes Engine (GKE)             |
+| **Continuous Integration**       | GitHub Actions                             |
+| **GitOps**                       | ArgoCD                                     |
+| **Progressive Delivery**         | Argo Rollouts                              |
+| **Container Registry**           | Google Artifact Registry                   |
+| **Ingress & Traffic Management** | Gateway API, NGINX Gateway Fabric          |
+| **Edge Services**                | Cloudflare (DNS, CDN, SSL/TLS, WAF)        |
+| **Secrets Management**           | HashiCorp Vault, External Secrets Operator |
+| **Policy Enforcement**           | Kyverno                                    |
+| **Runtime Security**             | Falco                                      |
+| **Observability**                | Prometheus, Grafana, Alertmanager          |
+| **Event-Driven Autoscaling**     | KEDA                                       |
+| **Cost Monitoring**              | Kubecost                                   |
+| **Backup & Recovery**            | Velero                                     |
+| **Configuration Reloading**      | Reloader                                   |
+| **Database**                     | Cloud SQL for PostgreSQL (Single Instance) |
+| **Message Queue**                | Redis StatefulSet                          |
+
+---
+
+## Application Data Flow
+
+The application processes requests using an asynchronous message-driven workflow:
+
+1. A user submits a vote through the **Vote Service (Python)**.
+2. The Vote Service validates the request and stores the vote in the **Redis** queue.
+3. The **Worker Service (.NET)** continuously monitors Redis and retrieves pending vote messages.
+4. The Worker processes each vote and writes the results to **Cloud SQL for PostgreSQL**.
+5. The **Result Service (Node.js)** queries Cloud SQL to retrieve the latest vote counts.
+6. The processed results are presented to users through the web interface.
+
+This architecture keeps user-facing requests lightweight while delegating background processing to dedicated worker services, allowing the platform to efficiently handle increasing workloads.
+
+---
+
+## Key Features
+
+* Private Google Kubernetes Engine (GKE) cluster
+* Infrastructure provisioning using Terraform
+* GitOps-based continuous deployment with ArgoCD
+* Automated CI pipeline with GitHub Actions
+* Container vulnerability scanning using Trivy
+* Software Bill of Materials (SBOM) generation
+* Container image signing using Cosign
+* Progressive application delivery with Argo Rollouts
+* Event-driven autoscaling using KEDA
+* Policy enforcement using Kyverno
+* Runtime security monitoring with Falco
+* Secure secrets management using HashiCorp Vault and External Secrets Operator
+* Automated TLS certificate management using cert-manager
+* Gateway API with NGINX Gateway Fabric
+* Monitoring and alerting using Prometheus, Grafana, and Alertmanager
+* Kubernetes cost visibility with Kubecost
+* Backup and disaster recovery using Velero
+* Automatic workload reloads using Reloader
+* Python-based platform automation with Kubernetes CronJobs and Slack notifications
+
+---
+
+## Solution Highlights
+
+* Modular Infrastructure as Code architecture
+* Secure GitOps deployment model
+* Production-inspired Kubernetes platform
+* Event-driven microservices architecture
+* Progressive application delivery strategies
+* Built-in observability and alerting
+* Integrated security across the software delivery lifecycle
+* Automated operational workflows
+* Cost visibility and resource optimization
+* Backup and disaster recovery capabilities
+
+This project demonstrates how modern cloud-native technologies can be combined to build a **secure, scalable, observable, and automated Kubernetes platform** that follows industry best practices and reflects real-world DevOps workflows.
 
 ---
 
