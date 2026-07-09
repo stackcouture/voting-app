@@ -11,20 +11,12 @@
 ![Docker](https://img.shields.io/badge/Docker-Containers-2496ED?style=for-the-badge&logo=docker)
 
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=for-the-badge&logo=githubactions)
-![GitOps](https://img.shields.io/badge/GitOps-ArgoCD-EF7B4D?style=for-the-badge&logo=argo)
-![Kubernetes](https://img.shields.io/badge/Kubernetes-GKE-326CE5?style=for-the-badge&logo=kubernetes)
-![Argo Rollouts](https://img.shields.io/badge/Argo_Rollouts-Progressive_Delivery-FC6D26?style=for-the-badge)
-![KEDA](https://img.shields.io/badge/KEDA-Event_Driven_Autoscaling-5A0FC8?style=for-the-badge)
-![Gateway API](https://img.shields.io/badge/Gateway_API-Traffic_Management-009688?style=for-the-badge)
 
 ![Artifact Registry](https://img.shields.io/badge/Artifact_Registry-Container_Registry-1A73E8?style=for-the-badge)
 ![Trivy](https://img.shields.io/badge/Trivy-Vulnerability_Scanning-1904DA?style=for-the-badge)
 ![Cosign](https://img.shields.io/badge/Cosign-Image_Signing-3D5AFE?style=for-the-badge)
 ![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?style=for-the-badge&logo=prometheus)
 ![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?style=for-the-badge&logo=grafana)
-![Slack](https://img.shields.io/badge/Slack-Notifications-4A154B?style=for-the-badge&logo=slack)
-
-**Production-inspired cloud-native microservices platform demonstrating GitOps, Kubernetes, DevSecOps, progressive delivery, observability, and automated operations on Google Kubernetes Engine**
 
 </div>
 
