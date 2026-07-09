@@ -1,6 +1,34 @@
 
 # 🚀 Project Overview
 
+<div align="center">
+
+![Python](https://img.shields.io/badge/Python-Flask-3776AB?style=for-the-badge&logo=python)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js)
+![.NET](https://img.shields.io/badge/.NET-Worker-512BD4?style=for-the-badge&logo=dotnet)
+![Redis](https://img.shields.io/badge/Redis-Message_Broker-DC382D?style=for-the-badge&logo=redis)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Cloud_SQL-336791?style=for-the-badge&logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Containers-2496ED?style=for-the-badge&logo=docker)
+
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=for-the-badge&logo=githubactions)
+![GitOps](https://img.shields.io/badge/GitOps-ArgoCD-EF7B4D?style=for-the-badge&logo=argo)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-GKE-326CE5?style=for-the-badge&logo=kubernetes)
+![Argo Rollouts](https://img.shields.io/badge/Argo_Rollouts-Progressive_Delivery-FC6D26?style=for-the-badge)
+![KEDA](https://img.shields.io/badge/KEDA-Event_Driven_Autoscaling-5A0FC8?style=for-the-badge)
+![Gateway API](https://img.shields.io/badge/Gateway_API-Traffic_Management-009688?style=for-the-badge)
+
+![Artifact Registry](https://img.shields.io/badge/Artifact_Registry-Container_Registry-1A73E8?style=for-the-badge)
+![Trivy](https://img.shields.io/badge/Trivy-Vulnerability_Scanning-1904DA?style=for-the-badge)
+![Cosign](https://img.shields.io/badge/Cosign-Image_Signing-3D5AFE?style=for-the-badge)
+![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C?style=for-the-badge&logo=prometheus)
+![Grafana](https://img.shields.io/badge/Grafana-Dashboards-F46800?style=for-the-badge&logo=grafana)
+![Slack](https://img.shields.io/badge/Slack-Notifications-4A154B?style=for-the-badge&logo=slack)
+
+**Production-inspired cloud-native microservices platform demonstrating GitOps, Kubernetes, DevSecOps, progressive delivery, observability, and automated operations on Google Kubernetes Engine**
+
+</div>
+
+---
 This project demonstrates a **production-inspired cloud-native microservices platform** built on **Google Cloud Platform (GCP)** and deployed to a **private Google Kubernetes Engine (GKE)** cluster. The platform showcases modern **DevOps**, **GitOps**, and **Kubernetes** practices by implementing the complete application lifecycle—from infrastructure provisioning and continuous integration to secure deployment, observability, automation, and day-to-day operations.
 
 The platform is designed with a modular architecture, enabling each layer to evolve independently while following cloud-native design principles such as Infrastructure as Code (IaC), declarative deployments, progressive delivery, automated scaling, security, and operational visibility.
@@ -21,6 +49,45 @@ The application follows an **asynchronous event-driven architecture**, where **R
 
 ---
 
+## 📑 Table of Contents
+- [☸️ Platform Architecture](#platform-architecture)
+- [🛠 Platform Components](#platform-components)
+- [🔄 Application Data Flow](#application-data-flow)
+- [✨ Key Features](#key-features)
+- [🎯 Solution Highlights](#solution-highlights)
+- [🏛 Architecture](#architecture)
+- [📦 Services](#services)
+  - [Network Architecture](#network-architecture)
+- [📂 Repository Structure](#repository-structure)
+- [🚀 End-to-End GitOps Deployment Architecture](#-end-to-end-gitops-deployment-architecture)
+  - [High-Level Flow](#high-level-flow)
+  - [Detailed Deployment Workflow](#detailed-deployment-workflow)
+    - [1. Developer Pushes Code](#1-developer-pushes-code)
+    - [2. GitHub Actions Pipeline Starts](#2-github-actions-pipeline-starts)
+    - [3. Unit Testing Stage](#3-unit-testing-stage)
+    - [4. Authenticate to Google Cloud](#4-authenticate-to-google-cloud)
+    - [5. Docker Image Build](#5-docker-image-build)
+    - [6. Vulnerability Scanning with Trivy](#6-vulnerability-scanning-with-trivy)
+    - [7. SBOM Generation](#7-sbom-generation)
+    - [8. Push Image to Artifact Registry](#8-push-image-to-artifact-registry)
+    - [9. Image Signing with Cosign](#9-image-signing-with-cosign)
+    - [10. SBOM Attestation](#10-sbom-attestation)
+    - [11. GitOps Repository Update](#11-gitops-repository-update)
+    - [12. ArgoCD Detects Git Changes](#12-argocd-detects-git-changes)
+    - [13. Kubernetes Deployment](#13-kubernetes-deployment)
+    - [14. Deployment Completed](#14-deployment-completed)
+  - [Why This Architecture Matters](#why-this-architecture-matters)
+    - [Architecture Decisions](#architecture-decisions)
+    - [GitOps Benefits](#gitops-benefits)
+    - [Security Benefits](#security-benefits)
+    - [Operational Benefits](#operational-benefits)
+    - [Deployment Principles](#deployment-principles)
+    - [Platform Components](#platform-components-1)
+    - [Architecture Summary](#architecture-summary)
+- [🙏 Acknowledgements](#acknowledgements)
+- [📄 License](#license)
+
+---
 ## Platform Architecture
 
 The entire platform runs on a **private Google Kubernetes Engine (GKE)** cluster and is managed through a **GitOps** workflow.
@@ -119,19 +186,6 @@ This architecture keeps user-facing requests lightweight while delegating backgr
 This project demonstrates how modern cloud-native technologies can be combined to build a **secure, scalable, observable, and automated Kubernetes platform** that follows industry best practices and reflects real-world DevOps workflows.
 
 ---
-
-## Table of Contents
-
-- [Architecture](#architecture)
-- [Services](#services)
-- [Repository Structure](#repository-structure)
-- [Prerequisites](#prerequisites)
-- [End-to-End GitOps Deployment Architecture](#end-to-end-deployment-flow)
-- [Acknowledgements](#acknowledgements)
-- [License](#license)
-
----
-
 ## Architecture
 
 The application follows a distributed microservices architecture deployed on Google Kubernetes Engine (GKE). Stateless frontend services communicate through Redis for asynchronous processing, while Cloud SQL for PostgreSQL provides managed persistent storage. The platform is designed to demonstrate production-grade deployment patterns, security controls, and GitOps workflows.
