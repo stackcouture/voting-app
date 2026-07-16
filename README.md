@@ -54,3 +54,10 @@ The application is designed to showcase modern Kubernetes deployment patterns an
 | Configuration Management | Kustomize                         |
 
 ---
+## Architecture 
+
+<p align="left">
+  <img src="docs/images/architecture.png" width="900" alt="Architecture">
+</p>
+
+---
