@@ -90,3 +90,29 @@ The application is designed to showcase modern Kubernetes deployment patterns an
 </p>
 
 ---
+## Repository Structure
+
+```
+voting-app/
+├── .github/
+│   └── workflows/  # GitHub Actions CI pipelines
+        ├──   result-ci.yaml
+        ├──   vote-ci.yaml
+        └──   worker-ci.yaml           
+├── .vscode/                 # Editor settings
+├── healthchecks/            # Shell scripts for Redis & Postgres health probes
+│   ├── redis.sh
+│   └── postgres.sh
+├── result/                  # Node.js result frontend
+├── seed-data/               # One-shot vote seeder (Docker Compose profile)
+├── vote/                    # Python/Flask vote frontend
+├── worker/                  # C# worker service
+├── architecture.excalidraw.png
+├── docker-compose.yml       # Build-from-source compose file (local dev)
+├── docker-compose.images.yml# Pre-built images compose file (quick start)
+├── docker-stack.yml         # Docker Swarm stack definition
+├── MAINTAINERS
+└── LICENSE                  # Apache 2.0
+```
+
+---
