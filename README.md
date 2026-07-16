@@ -61,3 +61,19 @@ The application is designed to showcase modern Kubernetes deployment patterns an
 </p>
 
 ---
+## Key Features
+
+* Polyglot microservices application built with **Python (Flask)**, **Node.js (Express)**, and **.NET**
+* Asynchronous event-driven architecture using **Redis** as the message broker
+* Persistent data storage with **Cloud SQL for PostgreSQL**
+* Containerized services using **Docker**
+* Automated CI pipelines with **GitHub Actions**
+* Container vulnerability scanning using **Trivy**
+* Software Bill of Materials (SBOM) generation
+* Container image signing using **Cosign**
+* GitOps-based deployments with **Argo CD**
+* Progressive delivery using **Argo Rollouts**
+* Deployment to **Google Kubernetes Engine (GKE)**
+* Declarative Kubernetes manifests managed with **Kustomize**
+
+---
