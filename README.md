@@ -28,7 +28,7 @@
 * Progressive delivery with **Argo Rollouts**
 
 ---
-## 📑 Table of Contents
+## Table of Contents
 
 - [Cloud-Native Voting Application](#cloud-native-voting-application)
 - [Highlights](#highlights)
