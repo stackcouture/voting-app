@@ -116,3 +116,15 @@ voting-app/
 ```
 
 ---
+##  Documentation
+
+| Document            | Description                                                                     |
+| ------------------- | ------------------------------------------------------------------------------- |
+| **ARCHITECTURE.md** | Application architecture and design overview                                    |
+| **SERVICES.md**     | Description of each microservice and its responsibilities                       |
+| **DEPLOYMENT.md**   | Deploying the application using Docker Compose and Kubernetes                   |
+| **CI-CD.md**        | GitHub Actions pipeline, image build, security scanning, and GitOps deployment  |
+| **SECURITY.md**     | Container security, SBOM generation, image signing, and security best practices |
+| **DEVELOPMENT.md**  | Local development setup, prerequisites, and build instructions                  |
+
+---
