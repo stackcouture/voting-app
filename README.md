@@ -79,3 +79,14 @@ The application is designed to showcase modern Kubernetes deployment patterns an
 ---
 ## Demo 
 
+<h4>Blue Green Deployment</h4>
+<p align="left">
+  <img src="docs/images/blue-green-deployment.gif" width="900" alt="Blue-Green Deployment">
+</p>
+
+<h4>Canary Deployment</h4>
+<p align="left">
+  <img src="docs/images/canary-deployment.gif" width="900" alt="Canary Deployment">
+</p>
+
+---
