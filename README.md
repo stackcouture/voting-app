@@ -28,6 +28,28 @@
 * Progressive delivery with **Argo Rollouts**
 
 ---
+## 📑 Table of Contents
+
+- [Cloud-Native Voting Application](#cloud-native-voting-application)
+- [Highlights](#highlights)
+- [Project Overview](#project-overview)
+- [Application Capabilities](#application-capabilities)
+- [Architecture](#architecture)
+- [Key Features](#key-features)
+- [Demo](#demo)
+- [Repository Structure](#repository-structure)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+  - [How to Contribute](#how-to-contribute)
+  - [Contribution Guidelines](#contribution-guidelines)
+  - [Reporting Issues](#reporting-issues)
+  - [Questions](#questions)
+- [Acknowledgements](#acknowledgements)
+  - [Original Project](#original-project)
+  - [Technologies Used](#technologies-used)
+- [License](#license)
+
+---
 ## Project Overview
 
 This repository contains a **polyglot cloud-native voting application** built with **Python**, **Node.js**, **.NET**, **Redis**, and **PostgreSQL**. It demonstrates a microservices-based architecture that uses asynchronous message processing, enabling services to scale and evolve independently.
