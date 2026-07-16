@@ -16,6 +16,30 @@
 
 </p>
 
-<p align="center">
-Python • Node.js • .NET • Redis • PostgreSQL • Docker • Kubernetes
-</p>
+---
+## Project Overview
+
+This repository contains a **polyglot cloud-native voting application** built with **Python**, **Node.js**, **.NET**, **Redis**, and **PostgreSQL**. It demonstrates a microservices-based architecture that uses asynchronous message processing, enabling services to scale and evolve independently.
+
+The application is designed to showcase modern Kubernetes deployment patterns and serves as the workload deployed on the production-inspired platform. It is continuously integrated with **GitHub Actions**, containerized with **Docker**, secured through **Trivy** and **Cosign**, and deployed to **Google Kubernetes Engine (GKE)** using a **GitOps** workflow.
+
+---
+## Application Capabilities
+
+| Area                     | Implementation                    |
+| ------------------------ | --------------------------------- |
+| Application Architecture | Polyglot Microservices            |
+| Frontend                 | Python (Flask), Node.js (Express) |
+| Background Processing    | .NET Worker Service               |
+| Message Broker           | Redis                             |
+| Database                 | Cloud SQL for PostgreSQL          |
+| Containerization         | Docker                            |
+| Continuous Integration   | GitHub Actions                    |
+| Container Registry       | Google Artifact Registry          |
+| Image Security           | Trivy, Cosign                     |
+| Deployment               | Google Kubernetes Engine (GKE)    |
+| GitOps                   | Argo CD                           |
+| Progressive Delivery     | Argo Rollouts                     |
+| Configuration Management | Kustomize                         |
+
+---
