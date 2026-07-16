@@ -186,6 +186,37 @@ If you have questions about the project or its implementation, feel free to open
 Thank you for contributing! 🚀
 
 ---
+## Acknowledgements
+
+This project is based on the **Docker Example Voting App**, which provides a simple polyglot microservices application demonstrating asynchronous message processing.
+
+The application has been significantly extended to showcase modern cloud-native application delivery practices, including containerization, CI/CD, GitOps, progressive delivery, and software supply chain security.
+
+### Original Project
+
+* **Docker Example Voting App**
+* Repository: https://github.com/dockersamples/example-voting-app
+* License: Apache License 2.0
+
+### Technologies Used
+
+This project leverages several open-source technologies, including:
+
+* Docker
+* Kubernetes
+* Google Kubernetes Engine (GKE)
+* GitHub Actions
+* Argo CD
+* Argo Rollouts
+* Redis
+* PostgreSQL
+* Trivy
+* Cosign
+* Kustomize
+
+A big thank you to the maintainers and contributors of these open-source projects for making cloud-native application development and deployment possible.
+
+---
 ## License
 
 [Apache 2.0](./LICENSE)
