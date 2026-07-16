@@ -128,3 +128,66 @@ voting-app/
 | **DEVELOPMENT.md**  | Local development setup, prerequisites, and build instructions                  |
 
 ---
+## Contributing
+
+Thank you for your interest in contributing to the Cloud-Native Voting Application!
+
+Contributions that improve the project are always welcome. Whether you're fixing a bug, improving documentation, or proposing a new feature, your support is appreciated.
+
+### How to Contribute
+
+1. Fork the repository.
+
+2. Create a feature branch.
+
+   ```bash
+   git checkout -b feature/my-feature
+   ```
+
+3. Make your changes.
+
+4. Test your changes locally.
+
+5. Commit your changes with a descriptive commit message.
+
+   ```bash
+   git commit -m "feat: add new feature"
+   ```
+
+6. Push your branch.
+
+   ```bash
+   git push origin feature/my-feature
+   ```
+
+7. Open a Pull Request describing your changes.
+
+### Contribution Guidelines
+
+* Follow the existing project structure and coding style.
+* Keep changes focused and well documented.
+* Test changes before submitting a Pull Request.
+* Update documentation when introducing new functionality.
+* Use clear and meaningful commit messages.
+
+### Reporting Issues
+
+If you discover a bug or have a feature request, please open a GitHub Issue with:
+
+* A clear description of the problem
+* Steps to reproduce (if applicable)
+* Expected and actual behavior
+* Relevant logs or screenshots
+
+### Questions
+
+If you have questions about the project or its implementation, feel free to open a GitHub Discussion or Issue.
+
+Thank you for contributing! 🚀
+
+---
+## License
+
+[Apache 2.0](./LICENSE)
+
+---
