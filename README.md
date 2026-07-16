@@ -77,3 +77,5 @@ The application is designed to showcase modern Kubernetes deployment patterns an
 * Declarative Kubernetes manifests managed with **Kustomize**
 
 ---
+## Demo 
+
