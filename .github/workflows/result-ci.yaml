@@ -153,7 +153,7 @@ jobs:
       - name: Checkout GitOps Repo
         uses: actions/checkout@v4
         with:
-          repository: stackcouture/gitops-microservices-platform
+          repository: stackcouture/gke-gitops
           token: ${{ secrets.GITOPS_TOKEN }}
           fetch-depth: 0
 
