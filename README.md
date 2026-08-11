@@ -16,6 +16,13 @@
 </p>
 
 ---
+## Architecture 
+
+<p align="left">
+  <img src="docs/images/architecture-1.png" width="900" alt="Architecture">
+</p>
+
+---
 ### Highlights
 
 * **Python**, **Node.js**, and **.NET** microservices
@@ -74,13 +81,6 @@ The application is designed to showcase modern Kubernetes deployment patterns an
 | GitOps                   | Argo CD                           |
 | Progressive Delivery     | Argo Rollouts                     |
 | Configuration Management | Kustomize                         |
-
----
-## Architecture 
-
-<p align="left">
-  <img src="docs/images/architecture.png" width="900" alt="Architecture">
-</p>
 
 ---
 ## Key Features
