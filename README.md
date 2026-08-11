@@ -36,12 +36,10 @@
 
 ---
 ## Table of Contents
-
-- [Cloud-Native Voting Application](#cloud-native-voting-application)
 - [Highlights](#highlights)
+- [Architecture](#architecture)
 - [Project Overview](#project-overview)
 - [Application Capabilities](#application-capabilities)
-- [Architecture](#architecture)
 - [Key Features](#key-features)
 - [Demo](#demo)
 - [Repository Structure](#repository-structure)
